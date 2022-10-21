@@ -1,0 +1,1 @@
+I took a break from developing a project with React. a project I made for repetition
