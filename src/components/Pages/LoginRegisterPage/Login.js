@@ -3,21 +3,29 @@ import { HomeHeaderButton, LoginRegisterBox, LoginRegisterDiv, LoginRegisterForm
 import { useForm } from "react-hook-form";
 import { LoginSchema } from "../../Validation/Validation.js";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import HomeHeaderLayout from "../HomePage/HomeHeader.js";
-import { redirect } from "react-router-dom";
-import { userLoginRequest } from "../../../Api/userApi.js";
-
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../../../Redux/authSlice.js";
+import { useLoginMutation } from "../../../Api/AuthApiSlice.js";
 
 const Login = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [login, { isLoading }] = useLoginMutation();
     const { register, handleSubmit } = useForm({
         shouldUseNativeValidation: true,
         resolver: yupResolver(LoginSchema)
     });
-    const onSubmit = async (data) => {
-        const datax = await userLoginRequest(data);
-        redirect("/profile");
 
+    const onSubmit = async (data) => {
+        try {
+            const userData = await login(data).unwrap();
+            dispatch(setCredentials({ ...userData }))
+            navigate("/profile");
+        } catch (err) {
+            console.log(err);
+        }
     }
     return (
         <Container>
@@ -41,7 +49,6 @@ const Login = () => {
                             <Link to="/Register">
                                 <HomeHeaderButton >Register</HomeHeaderButton>
                             </Link>
-
                         </LoginRegisterForm>
                     </LoginRegisterDiv>
                 </LoginRegisterPage>
