@@ -4,11 +4,9 @@ import Footer from "./HomeFooter.js";
 import HomeBody from "./HomeBody.js";
 const HomePage = () => {
 
-
     return (
 
         <Container>
-
             <Row className="header">
                 <HomeHeaderLayout page="Home" />
             </Row>

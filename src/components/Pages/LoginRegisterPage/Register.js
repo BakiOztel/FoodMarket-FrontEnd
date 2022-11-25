@@ -5,16 +5,24 @@ import { RegisterSchema } from "../../Validation/Validation.js";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { userRegisterRequest } from "../../../Api/userApi.js";
-import { redirect } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 const RegisterPage = () => {
-    const { register, handleSubmit } = useForm({
+    const navigate = useNavigate();
+    const { register, handleSubmit, setError, formState: { errors } } = useForm({
         shouldUseNativeValidation: true,
         resolver: yupResolver(RegisterSchema)
     });
     const onSubmit = async (data) => {
         try {
-            await userRegisterRequest({ email: data.email, password: data.password });
-            redirect("/Login");
+            const x = await userRegisterRequest({ email: data.email, password: data.password });
+            if (x.error === true) {
+                console.log(x.error)
+                setError("email", { type: "custom", message: x.message });
+            } else {
+                console.log(x.error)
+                navigate("/login");
+            }
+
         } catch (err) {
             console.log(err);
         }
@@ -42,6 +50,7 @@ const RegisterPage = () => {
                                 <input placeholder=" "  {...register("confirmPassword", { required: "doldur lan" })} />
                                 <label> Confirm Password</label>
                             </LoginRegisterBox>
+                            {errors.email && <p>{errors.email.message}</p>}
                             <HomeHeaderButton type="submit">let's start</HomeHeaderButton>
                         </LoginRegisterForm>
                     </LoginRegisterDiv>
